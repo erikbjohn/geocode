@@ -1,0 +1,37 @@
+---
+title: "geocode"
+author: "Erik Johnson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette illustrates how the points data set works. 
+
+```{r, eval=FALSE}
+library(geocode)
+library(parcels)
+geocode <- list()
+l.pkg.path <- list()
+l.pkg.path$parcels <- '~/Dropbox/pkg.data/parcels'
+l.pkg.path$points <- '~/Dropbox/pkg.data/points'
+l.pkg.path$geocodes.bad.address.location <- '~/Dropbox/pkg.data/geocodes.bad.address/geocodes.bad.address.rdata'
+source('~/Dropbox/pkg.data/private/api.key.R')
+
+# Study.extent
+study.cities <- 'Denver'
+parcels.address <- parcels::address(l.pkg.path$parcels)
+study.zips <- unique(parcels.address[city==study.cities]$zip)
+study.states <- unique(parcels.address[city==study.cities]$state)
+l.study.extent <- list(zips = study.zips, cities=study.cities, states = study.states)
+
+# api.key
+api.key <- api.key()
+
+# source 
+
+geocode::geocode()
+```

@@ -1,0 +1,35 @@
+Package: geocode
+Type: Package
+Title: geocode data for denver cmsa
+Version: 0.1.0
+Author: Erik Johnson
+Maintainer: Erik Johnson <erikbjohn@gmail.com>
+Description: Geocodes address that do not intersect shapes.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    stringr,
+    stringdist,
+    tidyr, 
+    utils,
+    stats,
+    data.table,
+    methods.string,
+    foreign,
+    rgdal,
+    raster,
+    rgeos,
+    methods.shapes,
+    dplyr, 
+    sp,
+    cleangeo,
+    parcels,
+    parallel,
+    methods,
+    googleway,
+    points
+RoxygenNote: 6.0.1.9000
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
