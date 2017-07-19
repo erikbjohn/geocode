@@ -35,13 +35,12 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' @importFrom dplyr select one_of
 geocode <- function(data.root, GEO, api.key, source, l.study.extent){
   dt.pkg.path <- pkg.data.paths::dt(data.root)
-  geocodes.bad.address.location <- dt.pkg.path[file.name=='geocodes.bad.address.rdata']$sys.path
   points.address.location <- unique(dt.pkg.path[pkg.name=='points']$sys.path)
   zip <- NULL; match.rank <- NULL; street <- NULL; gLong <- NULL; gLat <- NULL
   match.descr <- NULL; file.name <- NULL; pkg.name <- NULL
   geo.data.id <- GEO$address.id
   # Load loookup data
-  states.abbrev <- l.study.extent
+  states.abbrev <- l.study.extent$states
   study.zips <- l.study.extent$zips
   GEO.list <- list()
   regex.street.body <- paste0('(?<=(', paste(as.character(methods.string::abbrev[class=='suffix', search]), collapse=')|('), '))( |,).+')
@@ -168,7 +167,7 @@ geocode <- function(data.root, GEO, api.key, source, l.study.extent){
     iter <- iter + 1
   }
   if (length(l)==0){
-    geocodes.bad.address <- geocode::geocodes.bad.address(geocodes.bad.address.location, GEO, source) 
+    geocodes.bad.address <- geocode::geocodes.bad.address(data.root, GEO, source) 
     DT.geo <- data.table(match.rank='No Match')
   } else {
     DT.geo <- rbindlist(l, use.names=TRUE, fill=TRUE)
@@ -182,7 +181,7 @@ geocode <- function(data.root, GEO, api.key, source, l.study.extent){
     }
     if(nrow(DT.geo)==0){
       DT.geo <- rbindlist(list(DT.geo, data.table(match.rank='No Match')), use.names=TRUE, fill=TRUE)
-      geocodes.bad.address <- geocode::geocodes.bad.address(geocodes.bad.address.location, GEO, source)
+      geocodes.bad.address <- geocode::geocodes.bad.address(data.root, GEO, source)
       DT.geo$long <- 0
       DT.geo$lat <- 0
     }
