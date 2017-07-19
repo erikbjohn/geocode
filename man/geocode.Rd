@@ -7,10 +7,10 @@
 \alias{geocode}
 \title{\code{geocode} package}
 \usage{
-geocode(l.pkg.path, GEO, api.key, source, l.study.extent)
+geocode(data.root, GEO, api.key, source, l.study.extent)
 }
 \arguments{
-\item{l.pkg.path}{list of local data paths (example: pkg.path$points.address points to points.address.rdata)}
+\item{data.root}{dropbox root pkg.data dir}
 
 \item{GEO}{data.table with one row (missing)}
 

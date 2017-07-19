@@ -16,7 +16,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' @title geocode
 #'
 #' @description Creates and loads points.address file
-#' @param l.pkg.path list of local data paths (example: pkg.path$points.address points to points.address.rdata)
+#' @param data.root dropbox root pkg.data dir
 #' @param GEO data.table with one row (missing)
 #' @param api.key google api.key character
 #' @param source data source example: mmed.20101215
@@ -31,10 +31,14 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'     parcels
 #'     googleway
 #'     points
+#'     pkg.data.paths
 #' @importFrom dplyr select one_of
-geocode <- function(l.pkg.path, GEO, api.key, source, l.study.extent){
+geocode <- function(data.root, GEO, api.key, source, l.study.extent){
+  dt.pkg.path <- pkg.data.paths::dt(data.root)
+  geocodes.bad.address.location <- dt.pkg.path[file.name=='geocodes.bad.address.rdata']$sys.path
+  points.address.location <- unique(dt.pkg.path[pkg.name=='points']$sys.path)
   zip <- NULL; match.rank <- NULL; street <- NULL; gLong <- NULL; gLat <- NULL
-  match.descr <- NULL
+  match.descr <- NULL; file.name <- NULL; pkg.name <- NULL
   geo.data.id <- GEO$address.id
   # Load loookup data
   states.abbrev <- l.study.extent
@@ -164,7 +168,7 @@ geocode <- function(l.pkg.path, GEO, api.key, source, l.study.extent){
     iter <- iter + 1
   }
   if (length(l)==0){
-    geocodes.bad.address <- geocode::geocodes.bad.address(l.pkg.path$geocodes.bad.address.location, GEO, source) 
+    geocodes.bad.address <- geocode::geocodes.bad.address(geocodes.bad.address.location, GEO, source) 
     DT.geo <- data.table(match.rank='No Match')
   } else {
     DT.geo <- rbindlist(l, use.names=TRUE, fill=TRUE)
@@ -174,11 +178,11 @@ geocode <- function(l.pkg.path, GEO, api.key, source, l.study.extent){
       DT.geo <- DT.geo[order(as.integer(match.rank)),.(long=gLong, lat=gLat, match.descr, match.rank)][1]
       DT.geo <- cbind(GEO, DT.geo)
       DT.geo$data.source <- source
-      points::address.update(l.pkg.path$points, DT.geo, points.source=source)
+      points::address.update(points.address.location, DT.geo, points.source=source)
     }
     if(nrow(DT.geo)==0){
       DT.geo <- rbindlist(list(DT.geo, data.table(match.rank='No Match')), use.names=TRUE, fill=TRUE)
-      geocodes.bad.address <- geocode::geocodes.bad.address(l.pkg.path$geocodes.bad.address.location, GEO, source)
+      geocodes.bad.address <- geocode::geocodes.bad.address(geocodes.bad.address.location, GEO, source)
       DT.geo$long <- 0
       DT.geo$lat <- 0
     }
@@ -188,7 +192,7 @@ geocode <- function(l.pkg.path, GEO, api.key, source, l.study.extent){
 #' @title geocodes.bad.address
 #'
 #' @description Creates and loads points.address file
-#' @param l.pkg.path character vector l.pkg.path(geocodes.bad.address.location, parcels)
+#' @param data.root dropbox root pkg.data dir
 #' @param geocodes.bad.address.new new bad geocoded address
 #' @param location.source location source
 #' @keywords points, clean, geocode
@@ -200,16 +204,21 @@ geocode <- function(l.pkg.path, GEO, api.key, source, l.study.extent){
 #'     foreign
 #'     parcels
 #'     googleway
-geocodes.bad.address <- function(l.pkg.path, geocodes.bad.address.new, location.source){
-  if (file.exists(l.pkg.path$geocodes.bad.address.location)){
-    load(l.pkg.path$geocodes.bad.address.location)
+#'     pkg.data.paths
+geocodes.bad.address <- function(data.root, geocodes.bad.address.new, location.source){
+  file.name <- NULL
+  pkg.name <- NULL
+  dt.pkg.path <- pkg.data.paths::dt(data.root)
+  geocodes.bad.address.location <- dt.pkg.path[file.name=='geocodes.bad.address.rdata']$sys.path
+  if (file.exists(geocodes.bad.address.location)){
+    load(geocodes.bad.address.location)
   } else {
-    parcels.address <- parcels::address(l.pkg.path$parcels)
+    parcels.address <- parcels::address(unique(dt.pkg.path[pkg.name=='parcels']$pkg.root))
     geocodes.bad.addresss <- data.table::copy(parcels.address[FALSE])
     setnames(geocodes.bad.address, 'street.num.low', 'street.num')
     cols <- names(geocodes.bad.address)[grep('.low|.hi', names(geocodes.bad.address), invert=TRUE)]
     geocodes.bad.address <- geocodes.bad.address[, (cols), with=FALSE]
-    save(geocodes.bad.address, file=l.pkg.path$geocodes.bad.address.location)
+    save(geocodes.bad.address, file=geocodes.bad.address.location)
   }
   if (!missing(geocodes.bad.address.new)){
     id.start <- max(as.integer(geocodes.bad.address$location.id))+1
@@ -223,7 +232,7 @@ geocodes.bad.address <- function(l.pkg.path, geocodes.bad.address.new, location.
     geocodes.bad.address <- rbindlist(list(geocodes.bad.address, geocodes.bad.address.new), use.names=TRUE)
     setkeyv(geocodes.bad.address, names(geocodes.bad.address)[!(names(geocodes.bad.address) %in% 'location.id')])
     geocodes.bad.address <- unique(geocodes.bad.address)
-    save(geocodes.bad.address, file=l.pkg.path$geocodes.bad.address.location)
+    save(geocodes.bad.address, file=geocodes.bad.address.location)
     # For bad hand coded matches
     ## geocodes.bad.address.new <- points.address[(match.rank==2 & !(zip %in% study.zips))|match.rank %in% c(3,5,6)]
   }

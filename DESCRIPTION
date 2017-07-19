@@ -28,7 +28,8 @@ Imports:
     parallel,
     methods,
     googleway,
-    points
+    points,
+    pkg.data.paths
 RoxygenNote: 6.0.1.9000
 Suggests: knitr,
     rmarkdown

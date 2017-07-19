@@ -4,10 +4,10 @@
 \alias{geocodes.bad.address}
 \title{geocodes.bad.address}
 \usage{
-geocodes.bad.address(l.pkg.path, geocodes.bad.address.new, location.source)
+geocodes.bad.address(data.root, geocodes.bad.address.new, location.source)
 }
 \arguments{
-\item{l.pkg.path}{character vector l.pkg.path(geocodes.bad.address.location, parcels)}
+\item{data.root}{dropbox root pkg.data dir}
 
 \item{geocodes.bad.address.new}{new bad geocoded address}
 
