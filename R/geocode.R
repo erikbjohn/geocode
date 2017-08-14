@@ -34,8 +34,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'     pkg.data.paths
 #' @importFrom dplyr select one_of
 geocode <- function(data.root, GEO, api.key, source, l.study.extent){
-  dt.pkg.path <- pkg.data.paths::dt(data.root)
-  points.address.location <- unique(dt.pkg.path[pkg.name=='points']$sys.path)
+  dt.pkg.path <- pkg.data.paths::paths(data.root, 'points')
+  points.address.location <- unique(dt.pkg.path$sys.path)
   zip <- NULL; match.rank <- NULL; street <- NULL; gLong <- NULL; gLat <- NULL
   match.descr <- NULL; file.name <- NULL; pkg.name <- NULL
   geo.data.id <- GEO$address.id
@@ -208,8 +208,8 @@ geocode <- function(data.root, GEO, api.key, source, l.study.extent){
 geocodes.bad.address <- function(data.root, geocodes.bad.address.new, location.source){
   file.name <- NULL
   pkg.name <- NULL
-  dt.pkg.path <- pkg.data.paths::dt(data.root)
-  geocodes.bad.address.location <- dt.pkg.path[file.name=='geocodes.bad.address.rdata']$sys.path
+  dt.pkg.path <- pkg.data.paths::paths(data.root, 'geocodes.bad.address')
+  geocodes.bad.address.location <- dt.pkg.path$sys.path
   if (file.exists(geocodes.bad.address.location)){
     load(geocodes.bad.address.location)
   } else {
