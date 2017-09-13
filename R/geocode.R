@@ -172,7 +172,7 @@ geocode <- function(data.root, GEO, api.key, source, l.study.extent){
   } else {
     DT.geo <- rbindlist(l, use.names=TRUE, fill=TRUE)
     DT.geo <- DT.geo[match.rank!='No Match' & street !='']
-    DT.geo$zip <- methods.string::explode.cityStateZip(DT.geo, l.study.extent$cities)$zip
+    DT.geo$zip <- methods.string::explode.cityStateZip(DT.geo)$zip
     DT.geo <- DT.geo[match.rank==1 | (match.rank==2 & zip %in% l.study.extent$zips)]
     if(nrow(DT.geo)>0){
       DT.geo <- DT.geo[order(as.integer(match.rank)),.(long=gLong, lat=gLat, match.descr, match.rank)][1]
